@@ -4,6 +4,8 @@ import * as Notifications from 'expo-notifications';
 import * as Linking from 'expo-linking';
 import { useRef, useEffect } from 'react';
 
+import Clock from './components/Clock';
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -38,9 +40,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Pressable onPress={invokeNotif}>
-        <Text>Invoke notification</Text>
-      </Pressable>
+      <Clock onAlert={invokeNotif}/>
       <StatusBar style="auto" />
     </View>
   );
