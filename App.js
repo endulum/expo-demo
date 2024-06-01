@@ -1,10 +1,46 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import * as Notifications from 'expo-notifications';
+import * as Linking from 'expo-linking';
+import { useRef, useEffect } from 'react';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
 
 export default function App() {
+  const responseListener = useRef(null)
+
+  useEffect(() => {
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      if (response.notification.request.content.data?.url) {
+        Linking.openURL(response.notification.request.content.data.url)
+      }
+    })
+  }, [])
+
+  async function invokeNotif() {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Notification Title",
+        body: 'Notification body.',
+        data: { 
+          url: 'https://github.com'
+        },
+      },
+      trigger: null
+    });
+  }
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+      <Pressable onPress={invokeNotif}>
+        <Text>Invoke notification</Text>
+      </Pressable>
       <StatusBar style="auto" />
     </View>
   );
